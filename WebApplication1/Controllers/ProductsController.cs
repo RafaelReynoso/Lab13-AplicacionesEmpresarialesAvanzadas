@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.CodeAnalysis;
 using WebApplication1.Models;
+using WebApplication1.Models.NewFolder;
+using WebApplication1.Models.Request;
 
 namespace WebApplication1.Controllers
 {
@@ -15,47 +17,30 @@ namespace WebApplication1.Controllers
         {
             _context = context;
         }
-
-        // GET: api/products
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> Listar()
-        {
-            var products = await _context.Products.ToListAsync();
-            return Ok(products);
-        }
-
-        // POST: api/products/crear
         [HttpPost]
-        public async Task<ActionResult<Product>> Crear([FromBody] Product product)
+        public IActionResult Insert([FromBody] ProductInsertRequest request)
         {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            var newProduct = new Product
+            {
+                Name = request.Name,
+                Price = request.Price,
+            };
 
-            return CreatedAtAction(nameof(Listar), new { id = product.ProductId }, product);
+            _context.Products.Add(newProduct);
+            _context.SaveChanges();
+            return Ok(newProduct);
+
         }
-
-        // GET: api/products/buscarporprecio
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> BuscarPorPrecio(float price)
+        [HttpPost]
+        public IActionResult Delete([FromBody] ProductDeleteRequest request)
         {
+            var product = _context.Products.FirstOrDefault((p => p.ProductId == request.ProductId));
 
-            var products = await _context.Products
-                .Where(p => p.Price > price)
-                .ToListAsync();
+            _context.Products.Remove(product);
 
-            return Ok(products);
-        }
+            _context.SaveChangesAsync();
 
-        // GET: api/products/ordernarpornombre
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> OrderByName()
-        {
-
-            var products = await _context.Products
-                .OrderBy(p => p.Name)
-                .ToListAsync();
-
-            return Ok(products);
+            return NoContent();
         }
     }
 }

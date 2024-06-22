@@ -1,11 +1,9 @@
-﻿namespace WebApplication1.Models
+﻿namespace WebApplication1.Models.Request
 {
-    public class Customer
+    public class CustomerInsertRequest
     {
-        public int CustomerId { get; set; }
         public string FirstName { get; set; }
         public string lastName { get; set; }
         public string DocumentNumber { get; set; }
-
     }
 }
