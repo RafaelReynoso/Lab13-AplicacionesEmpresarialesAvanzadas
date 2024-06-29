@@ -17,6 +17,8 @@ namespace WebApplication1.Controllers
         {
             _context = context;
         }
+
+        //1. Insertar Product
         [HttpPost]
         public IActionResult Insert([FromBody] ProductInsertRequest request)
         {
@@ -31,6 +33,8 @@ namespace WebApplication1.Controllers
             return Ok(newProduct);
 
         }
+
+        //2. Eliminar Product
         [HttpPost]
         public IActionResult Delete([FromBody] ProductDeleteRequest request)
         {

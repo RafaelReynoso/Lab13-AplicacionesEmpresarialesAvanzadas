@@ -16,6 +16,7 @@ namespace WebApplication1.Controllers
             _context = context;
         }
 
+        //3. Insertar Customer
         [HttpPost]
         public IActionResult Insert([FromBody] CustomerInsertRequest request)
         {
@@ -33,6 +34,7 @@ namespace WebApplication1.Controllers
 
         }
 
+        //4. Eliminar Customer
         [HttpPost]
         public IActionResult Delete([FromBody] CustomerDeleteRequest request)
         {

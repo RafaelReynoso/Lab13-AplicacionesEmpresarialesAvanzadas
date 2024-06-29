@@ -11,7 +11,7 @@ namespace WebApplication1.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=LAB1504-24\\SQLEXPRESS;" + "Initial Catalog=StoreDB; Integrated Security = True;trustservercertificate=True");
+            optionsBuilder.UseSqlServer("Server=PC-RAFAEL\\SQLEXPRESS;" + "Initial Catalog=StoreDB; Integrated Security = True;trustservercertificate=True");
         }
     }
 }

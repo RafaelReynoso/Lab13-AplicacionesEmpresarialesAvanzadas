@@ -17,6 +17,7 @@ namespace WebApplication1.Controllers
             _context = context;
         }
 
+        //5. Insertar Invoice
         [HttpPost]
         public IActionResult Insert([FromBody] InvoiceInsertRequest request)
         {

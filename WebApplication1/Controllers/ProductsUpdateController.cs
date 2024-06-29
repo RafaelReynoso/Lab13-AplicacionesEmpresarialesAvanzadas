@@ -17,6 +17,7 @@ namespace WebApplication1.Controllers
             _context = context;
         }
 
+        // 7.Actualizar Precio al producto
         [HttpPut]
         public IActionResult Update(int ProductId, [FromBody] ProductUpdateRequest request)
         {

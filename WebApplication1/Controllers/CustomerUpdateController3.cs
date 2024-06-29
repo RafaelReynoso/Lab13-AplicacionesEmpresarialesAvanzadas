@@ -17,6 +17,7 @@ namespace WebApplication1.Controllers
             _context = context;
         }
 
+        //6. Actualizar numeroDocumento al cliente
         [HttpPut]
         public IActionResult Update(int CustomerId, [FromBody] CustomerUpdateRequest request)
         {
