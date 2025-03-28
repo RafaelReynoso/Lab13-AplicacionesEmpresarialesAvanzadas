@@ -1,12 +1,25 @@
-apiVersion: backstage.io/v1alpha1
-kind: API
-metadata:
-  name: api-usuarios
-  description: API de usuarios de A190
-spec:
-  type: openapi
-  lifecycle: production
-  owner: equipo-backend
-  system: A190
-  definition:
-    $text: https://raw.githubusercontent.com/JorgeTrinidadHerrera/Laboratorio11/refs/heads/master/catalog-info.yaml
+openapi: 3.0.0
+info:
+  title: Mi API de Usuarios
+  version: 1.0.0
+paths:
+  /usuarios:
+    get:
+      summary: Obtiene la lista de usuarios
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    nombre:
+                      type: string
+servers:
+  - url: https://api.ejemplo.com
+    description: Servidor de producción
