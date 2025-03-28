@@ -1,16 +1,10 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: A263
-  title: Aplicación A263
-  description: Aplicacion A263
-  tags:
-    - admision
-    - administrativo
+  name: aplicacion-a190
+  description: Aplicación A190 del programa administrativo
 spec:
   type: service
   lifecycle: production
-  owner: equipo-postulante
+  owner: equipo-backend
   system: programa-administrativo
-  providesApis:
-    - "api-*"
