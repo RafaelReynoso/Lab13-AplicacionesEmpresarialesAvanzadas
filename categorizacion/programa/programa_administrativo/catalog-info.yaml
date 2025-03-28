@@ -1,9 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: System
 metadata:
-  name: programa-administrativo
-  title: Programa Administrativo
-  description: Sistema para la gestión administrativa en Admisión
+  name: administrativo
+  description: Programa Administrativo dentro del área de negocio de admisión
 spec:
-  owner: equipo-admision
+  owner: equipo-backend
   domain: admision
