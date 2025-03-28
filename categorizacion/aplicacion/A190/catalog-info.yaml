@@ -1,14 +1,14 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: aplicacion-a190
-  title: Aplicación A190
-  description: Plataforma para gestionar la admisión y pagos
+  name: aplicacion-a263
+  title: Aplicación A263
+  description: Aplicacion A263
   tags:
     - admision
     - administrativo
 spec:
   type: service
   lifecycle: production
-  owner: equipo-admision
+  owner: equipo-postulante
   system: programa-administrativo
