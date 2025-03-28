@@ -9,4 +9,4 @@ spec:
   owner: equipo-backend
   system: A190
   definition:
-    $text: https://raw.githubusercontent.com/usuario/repositorio/rama/openapi.yaml
+    external: https://raw.githubusercontent.com/RafaelReynoso/Lab13-AplicacionesEmpresarialesAvanzadas/master/openapi.yaml
