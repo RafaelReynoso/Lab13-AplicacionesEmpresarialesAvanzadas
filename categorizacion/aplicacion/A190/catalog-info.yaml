@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: aplicacion-a190
+  title: Aplicación A190
+  description: Plataforma para gestionar la admisión
+  tags:
+    - admision
+    - administrativo
+spec:
+  type: service
+  lifecycle: production
+  owner: equipo-admision
+  system: programa-administrativo

@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: api-1
+  title: API de Inscripción
+  description: API que maneja las inscripciones en la Aplicación A190
+spec:
+  type: openapi
+  lifecycle: production
+  owner: equipo-admision
+  definition:
+    $text: https://raw.githubusercontent.com/tu-org/repo/main/openapi.yaml
+  system: programa-administrativo
+  component: aplicacion-a190
