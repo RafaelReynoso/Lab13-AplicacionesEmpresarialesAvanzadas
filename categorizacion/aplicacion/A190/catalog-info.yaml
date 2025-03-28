@@ -12,3 +12,5 @@ spec:
   lifecycle: production
   owner: equipo-admision
   system: programa-administrativo
+  providesApis:
+    - A190-API  # Se vincula con la API
