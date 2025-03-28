@@ -9,6 +9,6 @@ spec:
   lifecycle: production
   owner: equipo-admision
   definition:
-    $text: https://raw.githubusercontent.com/tu-org/repo/main/openapi.yaml
+    $text: https://raw.githubusercontent.com/RafaelReynoso/Lab13-AplicacionesEmpresarialesAvanzadas/refs/heads/master/openapi.yaml
   system: programa-administrativo
   component: aplicacion-a190
