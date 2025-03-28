@@ -12,3 +12,5 @@ spec:
   lifecycle: production
   owner: equipo-postulante
   system: programa-administrativo
+  providesApis:
+    - "api-*"
