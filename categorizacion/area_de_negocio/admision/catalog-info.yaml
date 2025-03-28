@@ -2,5 +2,6 @@ apiVersion: backstage.io/v1alpha1
 kind: Domain
 metadata:
   name: admision
-  title: Admisión
-  description: APIs relacionadas con admisión de estudiantes
+  description: Dominio del área de Admisión
+spec:
+  owner: equipo-backend
