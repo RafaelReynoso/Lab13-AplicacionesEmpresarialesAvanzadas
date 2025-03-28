@@ -1,7 +1,0 @@
-apiVersion: backstage.io/v1alpha1
-kind: Domain
-metadata:
-  name: admision
-  description: Área de negocio de Admisión
-spec:
-  owner: equipo-admision
