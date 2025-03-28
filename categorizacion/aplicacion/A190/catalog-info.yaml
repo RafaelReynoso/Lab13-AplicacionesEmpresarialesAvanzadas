@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: aplicacion-a190
   title: Aplicación A190
-  description: Plataforma para gestionar la admisión
+  description: Plataforma para gestionar la admisión y pagos
   tags:
     - admision
     - administrativo
@@ -12,5 +12,3 @@ spec:
   lifecycle: production
   owner: equipo-admision
   system: programa-administrativo
-  providesApis:
-    - A190-API  # Se vincula con la API
