@@ -1,0 +1,24 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: agregar-api-a-a190
+  title: Agregar una nueva API a A190
+  description: Automatiza la actualización de providesApis en aplicacion-a190.yaml
+spec:
+  owner: equipo-admision
+  type: service
+  parameters:
+    - title: Nueva API
+      required:
+        - apiName
+      properties:
+        apiName:
+          type: string
+          description: Nombre de la nueva API
+  steps:
+    - id: update-component
+      action: fetch:template
+      input:
+        url: https://github.com/tu-repo-templates/actualizar-a190
+        values:
+          apiName: ${{ parameters.apiName }}
