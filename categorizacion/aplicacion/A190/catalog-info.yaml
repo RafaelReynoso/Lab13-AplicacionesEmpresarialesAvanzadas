@@ -2,8 +2,7 @@ apiVersion: backstage.io/v1alpha1
 kind: System
 metadata:
   name: A190
-  description: Aplicación A190 del Programa Administrativo
+  description: Aplicación A190 dentro del Programa Administrativo
 spec:
   owner: equipo-backend
-  domain: admision
   partOf: administrativo
