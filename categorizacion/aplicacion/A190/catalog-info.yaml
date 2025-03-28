@@ -5,4 +5,3 @@ metadata:
   description: Aplicación A190 dentro del Programa Administrativo
 spec:
   owner: equipo-backend
-  partOf: administrativo
