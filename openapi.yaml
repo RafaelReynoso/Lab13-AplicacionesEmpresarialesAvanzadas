@@ -1,25 +1,1886 @@
-openapi: 3.0.0
+openapi: 3.0.1
 info:
-  title: Mi API de Usuarios
+  title: UTP+Class - Microservicio User - API de Gestión de Usuarios
+  description: "Documentación detallada de la API para la gestión de usuarios, roles,\
+    \ contenido multimedia, sincronizaciones con PeopleSoft y otros servicios relacionados."
+  contact:
+    name: Angel Eduardo Hincho Jove
+    url: https://github.com/ahincho
+    email: ahincho@utp.edu.pe
   version: 1.0.0
+servers:
+# Added by API Auto Mocking Plugin
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/UTP-Xpedition/A200-MS-USER/1.0.0
+- url: https://utp.mas.class.production.com
+  description: Ambiente Productivo
+- url: https://utp.mas.class.uat.com
+  description: Ambiente de Certificación con Usuarios
+- url: https://utp.mas.class.qa.com
+  description: Ambiente de Quality Assurance
+- url: https://utp.mas.class.dev.com
+  description: Ambiente de Desarrollo
+- url: http://localhost:8087
+  description: Desarrollo Local
+tags:
+- name: Roles de Usuario
+  description: Gestión de roles de usuario
+- name: Usuarios
+  description: Gestión de usuarios
+- name: Contenido Multimedia
+  description: Gestión de fotos y multimedia de usuarios
+- name: Sincronización con PeopleSoft
+  description: Sincronización de usuarios y matrículas con PeopleSoft
+- name: Eventos
+  description: Gestión de eventos
+- name: Procesamiento por Lotes de PeopleSoft
+  description: Procesamientos masivos y en segundo plano de PeopleSoft
+- name: Trabajo en Equipo
+  description: Gestión de trabajo en equipo de estudiantes
+- name: Inicio de Sesión con Otro Rol
+  description: Acceso a la plataforma con diferentes roles
+- name: Estado del Microservicio
+  description: Comprobaciones del estado y disponibilidad del microservicio
+- name: Gestión Interna de Usuarios
+  description: Gestión interna de usuarios
 paths:
-  /usuarios:
-    get:
-      summary: Obtiene la lista de usuarios
+  /{userRoleH}/role/create:
+    post:
+      tags:
+      - Roles de Usuario
+      summary: Crear un nuevo rol
+      description: Permite la creación de un nuevo rol en el sistema.
+      operationId: roleCreate
+      requestBody:
+        description: Datos para la creación de un nuevo rol
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRole'
+        required: true
       responses:
-        '200':
-          description: Lista de usuarios
+        "200":
+          description: Rol creado exitosamente
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CreateIdResponse'
+        "400":
+          description: Solicitud inválida
+        "500":
+          description: Error interno del servidor
+  /users/search-email:
+    post:
+      tags:
+      - Usuarios
+      summary: Buscar usuarios por lista de correos electrónicos
+      description: Permite buscar múltiples usuarios en base a una lista de correos
+        electrónicos.
+      operationId: listUsersFindByEmail
+      requestBody:
+        description: Lista de correos electrónicos para buscar usuarios
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                example: user@example.com
+        required: true
+      responses:
+        "200":
+          description: Usuarios encontrados con éxito
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ListUsersResponse'
+        "400":
+          description: "Solicitud incorrecta, el formato de la lista de correos no\
+            \ es válido"
+        "500":
+          description: Error interno del servidor
+  /users/search-code:
+    post:
+      tags:
+      - Usuarios
+      summary: Buscar usuarios por lista de códigos
+      description: Permite buscar múltiples usuarios en base a una lista de códigos
+        únicos.
+      operationId: listUsersFindByCode
+      requestBody:
+        description: Lista de códigos de usuario para buscar
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                example: USR12345
+        required: true
+      responses:
+        "200":
+          description: Usuarios encontrados con éxito
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ListUsersResponse'
+        "400":
+          description: "Solicitud incorrecta, el formato de la lista de códigos no\
+            \ es válido"
+        "500":
+          description: Error interno del servidor
+  /users/photos:
+    post:
+      tags:
+      - Contenido Multimedia
+      summary: Obtener fotos de un usuario
+      description: Recibe un código de estudiante y devuelve las fotos asociadas al
+        usuario.
+      operationId: getPhotos
+      requestBody:
+        description: Datos del usuario y multimedia
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestCreatePhotos'
+        required: true
+      responses:
+        "200":
+          description: Fotos obtenidas correctamente
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetPhotosResponse'
+        "400":
+          description: Solicitud incorrecta
+        "500":
+          description: Error interno del servidor
+  /users/min:
+    post:
+      tags:
+      - Usuarios
+      summary: Obtener perfiles mínimos de usuarios
+      description: Este endpoint permite obtener información mínima de múltiples usuarios
+        a partir de una lista de IDs.
+      operationId: listStudentsMin
+      requestBody:
+        description: Lista de identificadores de usuarios
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                example: 550e8400-e29b-41d4-a716-446655440000
+        required: true
+      responses:
+        "200":
+          description: Lista de perfiles mínimos de usuarios obtenida correctamente
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ListMinUsersResponse'
+        "400":
+          description: "Solicitud incorrecta, verifique los datos enviados"
+        "404":
+          description: Usuarios no encontrados
+        "500":
+          description: Error interno del servidor
+  /internal/peoplesoft/users/batch:
+    post:
+      tags:
+      - Sincronización con PeopleSoft
+      summary: Registrar un usuario en PeopleSoft
+      description: Registro de usuarios en el sistema PeopleSoft.
+      operationId: createStudentsBatch
+      requestBody:
+        description: Información del usuario de PeopleSoft a registrar.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PeopleSoftUser'
+        required: true
+      responses:
+        "200":
+          description: Usuarios procesados correctamente
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PeopleSoftExternalServiceResponse'
+        "400":
+          description: Solicitud incorrecta - Datos inválidos en el cuerpo
+        "500":
+          description: Error interno del servidor - Fallo en el procesamiento de la
+            solicitud
+  /internal/peoplesoft/users/batch/v2:
+    post:
+      tags:
+      - Sincronización con PeopleSoft
+      summary: Procesar un lote de usuarios en PeopleSoft
+      description: Permite procesar múltiples usuarios en el sistema PeopleSoft en
+        una sola solicitud.
+      operationId: processUserBatch
+      requestBody:
+        description: Lista de usuarios de PeopleSoft a procesar.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PeopleSoftUser'
+        required: true
+      responses:
+        "200":
+          description: Usuarios procesados correctamente
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ProcessPeoplesoftUserBatchV2Response'
+        "400":
+          description: Solicitud incorrecta - Datos inválidos en el cuerpo
+        "500":
+          description: Error interno del servidor - Fallo en el procesamiento de la
+            solicitud
+  /internal/peoplesoft/enrollments/batch:
+    post:
+      tags:
+      - Sincronización con PeopleSoft
+      summary: Procesar inscripción en PeopleSoft
+      description: Permite registrar inscripciones en el sistema PeopleSoft en una
+        sola solicitud.
+      operationId: processEnrolls
+      requestBody:
+        description: Datos de la inscripción en PeopleSoft a procesar.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PeopleSoftEnrollment'
+        required: true
+      responses:
+        "200":
+          description: Inscripciones procesadas correctamente
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PeopleSoftExternalServiceResponse'
+        "400":
+          description: Solicitud incorrecta - Datos inválidos en el cuerpo
+        "500":
+          description: Error interno del servidor - Fallo en el procesamiento de la
+            solicitud
+  /internal/peoplesoft/enrollments/batch/v2:
+    post:
+      tags:
+      - Sincronización con PeopleSoft
+      summary: Procesar un lote de inscripciones en PeopleSoft
+      description: Permite procesar múltiples inscripciones en el sistema PeopleSoft
+        en una sola solicitud.
+      operationId: processEnrollBatch
+      requestBody:
+        description: Lista de inscripciones a procesar en PeopleSoft.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PeopleSoftEnrollment'
+        required: true
+      responses:
+        "200":
+          description: Inscripciones procesadas correctamente
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ProcessPeoplesoftEnrollmentBatchV2Response'
+        "400":
+          description: Solicitud incorrecta - Datos inválidos en el cuerpo
+        "500":
+          description: Error interno del servidor - Fallo en el procesamiento de la
+            solicitud
+  /events:
+    post:
+      tags:
+      - Eventos
+      summary: Notificar evento ocurrido
+      description: Recibe una notificación de un evento y lo registra en el sistema.
+      operationId: eventSubscribedOccurred
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneralResponseEventData'
+        required: true
+      responses:
+        "200":
+          description: Evento registrado correctamente
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Solicitud inválida
+        "500":
+          description: Error interno del servidor
+  /admin/users/batch:
+    post:
+      tags:
+      - Procesamiento por Lotes de PeopleSoft
+      summary: Carga masiva de usuarios
+      description: Permite cargar un archivo con una lista de usuarios para ser procesados
+        en batch.
+      operationId: createStudentsBatch_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - file
+              type: object
+              properties:
+                file:
+                  type: string
+                  description: Archivo en formato CSV que contiene la información
+                    de los usuarios a procesar. Debe contener las columnas requeridas
+                    para el procesamiento.
+                  format: binary
+      responses:
+        "200":
+          description: Proceso de carga iniciado exitosamente
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CreateUsersBatchResponse'
+        "400":
+          description: Error en la solicitud
+          content:
+            '*/*':
+              schema:
+                type: object
+        "500":
+          description: Error interno del servidor
+          content:
+            '*/*':
+              schema:
+                type: object
+  /admin/enrollments/batch:
+    post:
+      tags:
+      - Procesamiento por Lotes de PeopleSoft
+      summary: Carga masiva de matrículas
+      description: Permite procesar un archivo con datos de matrículas para su integración
+        en PeopleSoft.
+      operationId: processEnrolls_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - file
+              type: object
+              properties:
+                file:
+                  type: string
+                  description: Archivo en formato CSV con los datos de las matrículas.
+                    Debe contener las columnas requeridas para el procesamiento.
+                  format: binary
+      responses:
+        "200":
+          description: Procesamiento exitoso de la carga masiva
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ProcessEnrollBatchResponse'
+        "400":
+          description: "Solicitud inválida, el archivo es requerido o tiene un formato\
+            \ incorrecto"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ProcessEnrollBatchResponse'
+        "500":
+          description: Error interno del servidor
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ProcessEnrollBatchResponse'
+  /{userRoleH}/role/{role}/change/status:
+    patch:
+      tags:
+      - Roles de Usuario
+      summary: Cambiar el estado de un rol
+      description: Modifica el estado de un rol específico identificado por su UUID.
+      operationId: roleChangeStatus
+      parameters:
+      - name: role
+        in: path
+        description: UUID del rol a modificar
+        required: true
+        schema:
+          type: string
+        example: 550e8400-e29b-41d4-a716-446655440000
+      requestBody:
+        description: Nuevo estado del rol
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeStatusRole'
+        required: true
+      responses:
+        "200":
+          description: Estado del rol actualizado correctamente
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CreateIdResponse'
+        "400":
+          description: Solicitud incorrecta
+        "404":
+          description: Rol no encontrado
+        "500":
+          description: Error interno del servidor
+  /users/{userId}/change/user:
+    patch:
+      tags:
+      - Usuarios
+      summary: Actualizar datos personales del usuario
+      description: Permite modificar la información personal de un usuario.
+      operationId: userChangesFields
+      parameters:
+      - name: userId
+        in: path
+        description: ID del usuario
+        required: true
+        schema:
+          type: string
+        example: 550e8400-e29b-41d4-a716-446655440000
+      requestBody:
+        description: Datos personales a actualizar
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalDataRequest'
+        required: true
+      responses:
+        "200":
+          description: Datos actualizados correctamente
+        "400":
+          description: Solicitud incorrecta
+        "404":
+          description: Usuario no encontrado
+        "500":
+          description: Error interno del servidor
+  /users/photos/{userId}/change/multimedia:
+    patch:
+      tags:
+      - Contenido Multimedia
+      summary: Editar multimedia de un usuario
+      description: Permite actualizar información multimedia de un usuario a partir
+        de su ID.
+      operationId: editMultimedia
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Datos actualizados de la multimedia
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestCreatePhotos'
+        required: true
+      responses:
+        "200":
+          description: Multimedia actualizada correctamente
+        "400":
+          description: Solicitud incorrecta
+        "500":
+          description: Error interno del servidor
+  /students/{studentId}/details/teamwork:
+    patch:
+      tags:
+      - Trabajo en Equipo
+      summary: Editar detalles del trabajo en equipo de un estudiante
+      description: Permite actualizar las preferencias y disponibilidad del estudiante
+        para trabajo en equipo.
+      operationId: editDetailsTeamWork
+      parameters:
+      - name: studentId
+        in: path
+        description: Identificador único del estudiante
+        required: true
+        schema:
+          type: string
+        example: 12345
+      requestBody:
+        description: Datos para actualizar los detalles del trabajo en equipo
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetailsTeamWorkRq'
+        required: true
+      responses:
+        "200":
+          description: Detalles actualizados correctamente
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StudentResponse'
+        "400":
+          description: Solicitud inválida
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StudentResponse'
+        "404":
+          description: Estudiante no encontrado
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StudentResponse'
+        "500":
+          description: Error interno del servidor
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StudentResponse'
+  /{userRoleH}/userIdToAccess/{userIdToAccess}/userRoleToSAccess/{userRoleToSAccess}:
+    get:
+      tags:
+      - Inicio de Sesión con Otro Rol
+      summary: Obtener roles permitidos para un usuario
+      description: Devuelve información sobre los roles a los que un usuario puede
+        acceder desde su rol actual.
+      operationId: getRoleAllowed
+      parameters:
+      - name: userIdToAccess
+        in: path
+        description: Identificador único del usuario al que se intenta acceder
+        required: true
+        schema:
+          type: string
+        example: user123
+      - name: userRoleToSAccess
+        in: path
+        description: Rol al que se intenta acceder
+        required: true
+        schema:
+          type: string
+        example: TEACHER
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetLoginAnotherRoleResponse'
+  /{userRoleH}/search/users:
+    get:
+      tags:
+      - Usuarios
+      summary: Buscar usuarios
+      description: "Recupera usuarios aplicando filtros como palabra clave, rol, paginació\
+        n y mostrar el total de resultados."
+      operationId: getStudent
+      parameters:
+      - name: q
+        in: query
+        description: Palabra clave para la búsqueda
+        required: true
+        schema:
+          type: string
+        example: john.doe
+      - name: role
+        in: query
+        description: Rol del usuario a buscar (opcional)
+        required: false
+        schema:
+          type: string
+          default: ""
+        example: ADMIN
+      - name: page
+        in: query
+        description: Número de página para paginación
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 1
+        example: 1
+      - name: limit
+        in: query
+        description: Cantidad de resultados por página
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 50
+        example: 50
+      - name: showTotal
+        in: query
+        description: Indica si se debe mostrar el total de resultados
+        required: false
+        schema:
+          type: boolean
+          default: false
+        example: true
+      responses:
+        "200":
+          description: Lista de usuarios obtenida exitosamente
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SearchUserResponse'
+        "400":
+          description: Solicitud incorrecta
+        "404":
+          description: Usuarios no encontrados
+        "500":
+          description: Error interno del servidor
+  /{userRoleH}/role/{role}:
+    get:
+      tags:
+      - Roles de Usuario
+      summary: Obtener información de un rol
+      description: Obtiene los detalles de un rol específico en base a su identificador.
+      operationId: getRole
+      parameters:
+      - name: role
+        in: path
+        description: Nombre del rol a consultar
+        required: true
+        schema:
+          type: string
+        example: ADMIN
+      responses:
+        "200":
+          description: Rol encontrado
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RoleResponse'
+        "404":
+          description: Rol no encontrado
+        "500":
+          description: Error interno del servidor
+  /{userRoleH}/role/{role}/user/{userId}:
+    get:
+      tags:
+      - Roles de Usuario
+      summary: Obtener usuario por rol e ID
+      description: Devuelve los detalles de un usuario específico asociado a un rol
+        basado en su UUID.
+      operationId: getRole_1
+      parameters:
+      - name: role
+        in: path
+        description: UUID del rol
+        required: true
+        schema:
+          type: string
+        example: 550e8400-e29b-41d4-a716-446655440000
+      - name: userId
+        in: path
+        description: UUID del usuario
+        required: true
+        schema:
+          type: string
+        example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        "200":
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRoleResponse'
+        "400":
+          description: Solicitud incorrecta
+        "404":
+          description: Usuario o rol no encontrado
+        "500":
+          description: Error interno del servidor
+  /{userRoleH}/role/{role}/by/ids:
+    get:
+      tags:
+      - Roles de Usuario
+      summary: Obtener usuarios por rol e IDs
+      description: Devuelve una lista de usuarios asociados a un rol específico que
+        coincidan con los IDs proporcionados.
+      operationId: listUsersByIds
+      parameters:
+      - name: role
+        in: path
+        description: Identificador del rol
+        required: true
+        schema:
+          type: string
+        example: ADMIN
+      - name: usersId
+        in: query
+        description: Lista de identificadores de usuario
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+        example:
+        - "123"
+        - "456"
+      responses:
+        "200":
+          description: Lista de usuarios encontrada
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserRoleResponse'
+        "400":
+          description: Solicitud incorrecta
+        "404":
+          description: Usuarios o rol no encontrados
+        "500":
+          description: Error interno del servidor
+  /{userRoleH}/role/me:
+    get:
+      tags:
+      - Roles de Usuario
+      summary: Obtener el rol del usuario autenticado
+      description: Devuelve la información del rol del usuario actualmente autenticado
+        en el sistema.
+      operationId: getRoleMe
+      responses:
+        "200":
+          description: Rol del usuario obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRoleResponse'
+        "401":
+          description: No autorizado
+        "404":
+          description: Usuario o rol no encontrado
+        "500":
+          description: Error interno del servidor
+  /{userRoleH}/role/me/list:
+    get:
+      tags:
+      - Roles de Usuario
+      summary: Obtener la lista de roles del usuario autenticado
+      description: Devuelve una lista con los roles asignados al usuario actualmente
+        autenticado en el sistema.
+      operationId: getRoleMeList
+      responses:
+        "200":
+          description: Lista de roles obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRoleResponse'
+        "401":
+          description: No autorizado
+        "404":
+          description: Usuario o roles no encontrados
+        "500":
+          description: Error interno del servidor
+  /users:
+    get:
+      tags:
+      - Usuarios
+      summary: Obtener lista de usuarios por IDs
+      description: Recupera una lista de usuarios basada en una lista de UUIDs proporcionada.
+      operationId: listStudents
+      parameters:
+      - name: usersId
+        in: query
+        description: Lista de UUIDs de los usuarios a recuperar
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+        example:
+        - 123e4567-e89b-12d3-a456-426614174000
+        - 987e6543-e21b-34d3-c456-123456789000
+      responses:
+        "200":
+          description: Lista de usuarios obtenida correctamente
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ListUsersResponse'
+        "400":
+          description: Solicitud incorrecta
+        "404":
+          description: Usuarios no encontrados
+        "500":
+          description: Error interno del servidor
+  /users/{userId}:
+    get:
+      tags:
+      - Usuarios
+      summary: Obtener información académica de un usuario
+      description: Permite obtener la información académica de un usuario dado su
+        ID.
+      operationId: getStudentCore
+      parameters:
+      - name: userId
+        in: path
+        description: UUID del usuario
+        required: true
+        schema:
+          type: string
+        example: 550e8400-e29b-41d4-a716-446655440000
+      responses:
+        "200":
+          description: Información académica del usuario obtenida correctamente
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/DataAcademicResponse'
+        "404":
+          description: Usuario no encontrado
+        "500":
+          description: Error interno del servidor
+  /users/{userId}/engagement:
+    get:
+      tags:
+      - Usuarios
+      summary: Obtener el estado del perfil 'engagement' de un usuario
+      description: "Permite obtener si un usuario tiene el estado 'engagement' activo\
+        \ o no, dado su ID."
+      operationId: getUserEngagement
+      parameters:
+      - name: userId
+        in: path
+        description: ID del usuario en formato UUID
+        required: true
+        schema:
+          type: string
+        example: 550e8400-e29b-41d4-a716-446655440000
+      responses:
+        "200":
+          description: Información del engagement del usuario obtenida correctamente
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserEngagementResponse'
+        "404":
+          description: Usuario no encontrado
+        "500":
+          description: Error interno del servidor
+  /students/{studentId}/teamwork:
+    get:
+      tags:
+      - Trabajo en Equipo
+      summary: Obtener información del trabajo en equipo de un estudiante
+      description: Devuelve los detalles del trabajo en equipo del estudiante con
+        el ID especificado.
+      operationId: getTeamWorkByUserId
+      parameters:
+      - name: studentId
+        in: path
+        description: Identificador único del estudiante
+        required: true
+        schema:
+          type: string
+        example: stu123
+      responses:
+        "200":
+          description: Detalles del trabajo en equipo del estudiante obtenidos correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentResponse'
+        "404":
+          description: Estudiante no encontrado
+        "500":
+          description: Error interno del servidor
+  /ping:
+    get:
+      tags:
+      - Estado del Microservicio
+      summary: Ping del microservicio
+      description: Permite comprobar que el microservicio responde correctamente.
+      operationId: ping
+      responses:
+        "200":
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestResponse'
+        "500":
+          description: Error en el servidor
+  /internal/userId/{userId}/userRole/{userRole}/userIdToAccess/{userIdToAccess}/userRoleToSAccess/{userRoleToSAccess}:
+    get:
+      tags:
+      - Gestión Interna de Usuarios
+      summary: Obtener roles permitidos para un usuario (uso interno)
+      description: Este endpoint devuelve información sobre los roles a los que un
+        usuario puede acceder desde su rol actual en un contexto interno.
+      operationId: getRoleAllowedInternal
+      parameters:
+      - name: userId
+        in: path
+        description: Identificador único del usuario que hace la solicitud
+        required: true
+        schema:
+          type: string
+        example: admin123
+      - name: userRole
+        in: path
+        description: Rol actual del usuario que hace la solicitud
+        required: true
+        schema:
+          type: string
+        example: ADMIN
+      - name: userIdToAccess
+        in: path
+        description: Identificador único del usuario al que se intenta acceder
+        required: true
+        schema:
+          type: string
+        example: user123
+      - name: userRoleToSAccess
+        in: path
+        description: Rol al que se intenta acceder
+        required: true
+        schema:
+          type: string
+        example: TEACHER
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetLoginAnotherRoleResponse'
+  /internal/list/users:
+    get:
+      tags:
+      - Gestión Interna de Usuarios
+      summary: Obtener lista de usuarios internos
+      description: Recupera una lista de usuarios basada en los identificadores proporcionados.
+      operationId: listStudents_1
+      parameters:
+      - name: usersId
+        in: query
+        description: Lista de identificadores de usuarios
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+        example:
+        - "123"
+        - "456"
+      responses:
+        "200":
+          description: Lista de usuarios obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestResponse'
+        "400":
+          description: Solicitud incorrecta
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RestResponse'
+        "500":
+          description: Error interno del servidor
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RestResponse'
+  /internal/list/user/by/{role}/ids:
+    get:
+      tags:
+      - Gestión Interna de Usuarios
+      summary: Listar usuarios internos por IDs
+      description: Devuelve una lista de usuarios internos asociados a un rol específico
+        mediante sus UUIDs.
+      operationId: listInternalUsersByIds
+      parameters:
+      - name: role
+        in: path
+        description: UUID del rol
+        required: true
+        schema:
+          type: string
+        example: 550e8400-e29b-41d4-a716-446655440000
+      - name: usersId
+        in: query
+        description: Lista de UUIDs de usuarios
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+        example:
+        - 123e4567-e89b-12d3-a456-426614174000
+        - 987e6543-e21b-34d3-c456-123456789000
+      responses:
+        "200":
+          description: Usuarios encontrados
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    nombre:
-                      type: string
-servers:
-  - url: https://api.ejemplo.com
-    description: Servidor de producción
+                  $ref: '#/components/schemas/UserRoleResponse'
+        "400":
+          description: Solicitud incorrecta
+        "404":
+          description: Usuarios o rol no encontrados
+        "500":
+          description: Error interno del servidor
+  /health:
+    get:
+      tags:
+      - Estado del Microservicio
+      summary: Verifica el estado del microservicio
+      description: "Permite comprobar la disponibilidad del microservicio, asegurando\
+        \ que está en funcionamiento."
+      operationId: getHealthy
+      responses:
+        "200":
+          description: Microservicio operativo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestResponse'
+        "500":
+          description: Error en el servidor
+  /users/photos/{userId}/delete/multimedia/{multimediaId}:
+    delete:
+      tags:
+      - Contenido Multimedia
+      summary: Eliminar multimedia de un usuario
+      description: Permite eliminar un archivo multimedia asociado a un usuario a
+        partir de su ID y el ID del archivo.
+      operationId: deleteMultimedia
+      parameters:
+      - name: userId
+        in: path
+        description: ID del usuario propietario del archivo
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: multimediaId
+        in: path
+        description: ID del archivo multimedia a eliminar
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Multimedia eliminada correctamente
+        "400":
+          description: Solicitud incorrecta
+        "404":
+          description: Multimedia no encontrada
+        "500":
+          description: Error interno del servidor
+components:
+  schemas:
+    CreateRole:
+      type: object
+      properties:
+        roleName:
+          type: string
+          description: Nombre del rol a crear
+          example: ADMIN
+    CreateIdResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identificador único generado
+          example: 123e4567-e89b-12d3-a456-426614174000
+    ListUsersResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          description: Lista de usuarios obtenidos en la consulta
+          items:
+            $ref: '#/components/schemas/UserResponse'
+      description: Respuesta que contiene una lista de usuarios
+    MultimediaUserDataResponse:
+      type: object
+      properties:
+        multimediaId:
+          type: string
+          description: Identificador único del archivo multimedia
+          example: abc123
+        userId:
+          type: string
+          description: Identificador del usuario asociado
+          example: user123
+        typeMultimedia:
+          type: string
+          description: Tipo de archivo multimedia
+          example: IMAGE
+        file:
+          type: string
+          description: URL o base64 del archivo multimedia
+          example: https://example.com/image.jpg
+        fileName:
+          type: string
+          description: Nombre del archivo
+          example: perfil.jpg
+        fileType:
+          type: string
+          description: Tipo MIME del archivo
+          example: image/jpeg
+      description: Respuesta con los datos multimedia asociados a un usuario
+    UserResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: Identificador único del usuario
+          example: "12345"
+        campusId:
+          type: string
+          description: Identificador del campus
+          example: CAMPUS_001
+        programId:
+          type: string
+          description: Identificador del programa académico
+          example: PROGRAM_001
+        email:
+          type: string
+          description: Correo electrónico del usuario
+          example: usuario@ejemplo.com
+        code:
+          type: string
+          description: Código del usuario
+          example: U2024001
+        documentType:
+          type: string
+          description: Tipo de documento de identidad
+          example: DNI
+        documentNumber:
+          type: string
+          description: Número de documento de identidad
+          example: "12345678"
+        firstName:
+          type: string
+          description: Nombres del usuario
+          example: Juan
+        lastName:
+          type: string
+          description: Apellidos del usuario
+          example: Pérez
+        picture:
+          type: string
+          description: URL de la foto de perfil
+          example: https://example.com/profile.jpg
+        birthdate:
+          type: string
+          description: Fecha de nacimiento
+          example: 1990-01-01
+        contactEmail:
+          type: string
+          description: Correo electrónico de contacto
+          example: contacto@ejemplo.com
+        source:
+          type: string
+          description: Fuente de origen del usuario
+          example: INTERNAL
+        status:
+          type: string
+          description: Estado del usuario
+          example: ACTIVE
+        nickName:
+          type: string
+          description: Apodo del usuario
+          example: JPerez
+        phone:
+          type: string
+          description: Número de teléfono
+          example: +51987654321
+        aboutMe:
+          type: string
+          description: Descripción sobre el usuario
+          example: Desarrollador de software
+        statusPhone:
+          type: boolean
+          description: Estado del teléfono validado
+          example: true
+        isEngagement:
+          type: boolean
+          description: Indica si el usuario está comprometido con la plataforma
+          example: true
+        files:
+          type: array
+          description: Lista de archivos multimedia del usuario
+          items:
+            $ref: '#/components/schemas/MultimediaUserDataResponse'
+      description: Respuesta con la información detallada de un usuario
+    RequestCreatePhotos:
+      type: object
+      properties:
+        codeStudent:
+          type: string
+          description: Código único del estudiante asociado a la foto
+          example: STU12345
+        multimediaId:
+          type: string
+          description: Identificador único de la multimedia
+          example: MULTI56789
+        typeMultimedia:
+          type: string
+          description: Tipo de multimedia asociada
+          example: IMAGE
+        file:
+          type: string
+          description: Archivo en base64 codificado
+          example: iVBORw0KGgoAAAANSUhEUgAA... (base64)
+        fileName:
+          type: string
+          description: Nombre del archivo de la foto
+          example: foto-perfil.png
+        fileType:
+          type: string
+          description: Tipo MIME del archivo
+          example: image/png
+    Data:
+      type: object
+      properties:
+        codeUtp:
+          type: string
+        photo:
+          type: string
+    GetPhotosResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Data'
+    ListMinUsersResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListMinUsersSingleResponse'
+    ListMinUsersSingleResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identificador único del usuario
+          example: 550e8400-e29b-41d4-a716-446655440000
+        code:
+          type: string
+          description: Código único del usuario
+          example: USR12345
+        firstName:
+          type: string
+          description: Nombre del usuario
+          example: Juan
+        lastName:
+          type: string
+          description: Apellido del usuario
+          example: Pérez
+        urlPhoto:
+          type: string
+          description: URL de la foto de perfil del usuario
+          example: https://example.com/profile.jpg
+      description: Respuesta con información mínima de un usuario
+    PeopleSoftUser:
+      type: object
+      properties:
+        registerId:
+          type: string
+          description: Identificador del registro de usuario en PeopleSoft.
+          example: "123456"
+        userId:
+          type: string
+          description: Identificador único del usuario.
+          example: 550e8400-e29b-41d4-a716-446655440000
+        loginId:
+          type: string
+          description: ID de inicio de sesión del usuario.
+          example: johndoe
+        authenticationProviderId:
+          type: string
+          description: Identificador del proveedor de autenticación.
+          example: auth-001
+        firstName:
+          type: string
+          description: Nombre del usuario.
+          example: John
+        lastName:
+          type: string
+          description: Apellido del usuario.
+          example: Doe
+        email:
+          type: string
+          description: Correo electrónico del usuario.
+          example: johndoe@example.com
+        status:
+          type: string
+          description: Estado del usuario dentro del sistema.
+          example: ACTIVE
+          enum:
+          - ACTIVE
+          - INACTIVE
+        fileId:
+          type: string
+          description: Identificador del archivo asociado al usuario en PeopleSoft.
+          example: file-001
+        executionStatus:
+          type: string
+          description: Estado de ejecución del proceso en PeopleSoft.
+          example: SUCCESS
+          enum:
+          - SUCCESS
+          - FAILED
+          - PENDING
+        executionComments:
+          type: string
+          description: Comentarios adicionales sobre la ejecución del proceso.
+          example: Proceso completado exitosamente.
+      description: Representa un usuario en PeopleSoft con información de autenticación
+        y estado de ejecución.
+    PeopleSoftExternalServiceResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Estado de la operación.
+          example: OK
+          enum:
+          - OK
+          - ERROR
+        registerId:
+          type: string
+          description: Identificador del registro en PeopleSoft.
+          example: "123456"
+        operationType:
+          type: string
+          description: Tipo de operación realizada.
+          example: CREATE
+        externalService:
+          type: string
+          description: Nombre del servicio externo asociado a la operación.
+          example: USER
+        registerType:
+          type: string
+          description: Tipo de registro procesado.
+          example: ENROLLMENT
+        executionComments:
+          type: string
+          description: Comentarios adicionales sobre la ejecución de la operación.
+          example: Proceso completado exitosamente.
+        objectInformation:
+          type: object
+          additionalProperties:
+            type: object
+            description: Información adicional del objeto procesado.
+            example:
+              userId: 550e8400-e29b-41d4-a716-446655440000
+          description: Información adicional del objeto procesado.
+          example:
+            userId: 550e8400-e29b-41d4-a716-446655440000
+      description: "Respuesta del servicio externo de PeopleSoft, indicando el estado\
+        \ de la operación."
+    ProcessPeoplesoftUserBatchV2Response:
+      type: object
+      properties:
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/PeopleSoftExternalServiceResponse'
+    PeopleSoftEnrollment:
+      type: object
+      properties:
+        registerId:
+          type: string
+          description: Identificador del registro de inscripción en PeopleSoft
+          example: "12345"
+        courseId:
+          type: string
+          description: Identificador del curso en el que se inscribe el usuario
+          example: COURSE_001
+        userId:
+          type: string
+          description: Identificador del usuario en el sistema PeopleSoft
+          example: USER_123
+        role:
+          type: string
+          description: Rol del usuario en la inscripción
+          example: STUDENT
+        status:
+          type: string
+          description: Estado de la inscripción
+          example: ACTIVE
+        executionStatus:
+          type: string
+          description: Estado de ejecución del proceso de inscripción
+          example: SUCCESS
+        executionComments:
+          type: string
+          description: Comentarios adicionales sobre la ejecución del proceso
+          example: Inscripción procesada correctamente
+        fileId:
+          type: string
+          description: Identificador del archivo relacionado con la inscripción
+          example: FILE_789
+    ProcessPeoplesoftEnrollmentBatchV2Response:
+      type: object
+      properties:
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/PeopleSoftExternalServiceResponse'
+      description: Respuesta del procesamiento en batch de inscripciones en PeopleSoft.
+    GeneralResponseEventData:
+      type: object
+      properties:
+        transaction_id:
+          type: string
+          description: Identificador único de la transacción asociada al evento.
+          example: abc123-xyz789
+        event:
+          type: string
+          description: Tipo de evento ocurrido.
+          example: USER_REGISTERED
+        attributes:
+          type: object
+          description: "Atributos adicionales del evento, su contenido puede variar\
+            \ según el tipo de evento."
+          example:
+            userId: "123"
+            status: active
+      description: Datos generales de un evento ocurrido en el sistema.
+    CreateUsersBatchResponse:
+      type: object
+      properties:
+        stats:
+          type: object
+          additionalProperties:
+            type: integer
+            description: "Estadísticas del proceso de carga, donde la clave representa\
+              \ el tipo de resultado y el valor la cantidad"
+            format: int32
+          description: "Estadísticas del proceso de carga, donde la clave representa\
+            \ el tipo de resultado y el valor la cantidad"
+          example:
+            processed: 100
+            errors: 5
+            duplicates: 2
+        results:
+          type: object
+          description: "Detalles adicionales de los resultados del proceso, puede\
+            \ incluir información de errores o registros creados"
+          example:
+          - email: user@example.com
+            status: created
+          - email: test@example.com
+            status: error
+            reason: Invalid format
+      description: Respuesta del proceso de carga masiva de usuarios
+    ProcessEnrollBatchResponse:
+      type: object
+      properties:
+        stats:
+          type: object
+          additionalProperties:
+            type: integer
+            description: "Estadísticas del proceso de carga, indicando la cantidad\
+              \ de registros procesados, exitosos y con errores"
+            format: int32
+          description: "Estadísticas del proceso de carga, indicando la cantidad de\
+            \ registros procesados, exitosos y con errores"
+          example:
+            processed: 100
+            successful: 95
+            failed: 5
+        results:
+          type: object
+          description: "Resultados detallados del procesamiento, incluyendo posibles\
+            \ errores por registro"
+          example:
+          - row: 1
+            status: SUCCESS
+          - row: 2
+            status: ERROR
+            message: Formato incorrecto
+      description: Respuesta del procesamiento de la carga masiva de matrículas
+    ChangeStatusRole:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Nuevo estado del rol
+          example: ACTIVE
+    PersonalDataRequest:
+      type: object
+      properties:
+        nickname:
+          type: string
+          description: Apodo o nombre de usuario
+          example: john_doe_92
+        phone:
+          type: string
+          description: Número de teléfono del usuario
+          example: +51987654321
+        aboutMe:
+          type: string
+          description: Descripción breve sobre el usuario
+          example: Desarrollador de software con 5 años de experiencia en Java y Spring
+            Boot.
+        statusPhone:
+          type: boolean
+          description: Indica si el usuario desea mostrar su teléfono en su perfil
+          example: true
+      description: Cuerpo de solicitud para actualizar los datos personales del usuario.
+    Availability:
+      type: object
+      properties:
+        teamWorkId:
+          type: string
+          description: Identificador del trabajo en equipo
+          example: team123
+        studentId:
+          type: string
+          description: Identificador único del estudiante
+          example: stu456
+        availableDays:
+          type: string
+          description: Días disponibles para trabajo en equipo
+          example: "Lunes, Miércoles, Viernes"
+        hourToStart:
+          type: string
+          description: Hora de inicio de disponibilidad
+          example: 09:00
+        hourToEnd:
+          type: string
+          description: Hora de fin de disponibilidad
+          example: 12:00
+      description: Disponibilidad de un estudiante para trabajo en equipo
+    DetailsTeamWorkRq:
+      type: object
+      properties:
+        mostValueTeamWork:
+          type: string
+          description: Aspecto más valorado en el trabajo en equipo por el estudiante
+          example: Comunicación efectiva
+        availabilities:
+          type: array
+          description: Lista de disponibilidades del estudiante para trabajo en equipo
+          items:
+            $ref: '#/components/schemas/Availability'
+      description: Solicitud para actualizar detalles del trabajo en equipo de un
+        estudiante
+    StudentResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: Identificador único del estudiante
+          example: stu123
+        acadCareer:
+          type: string
+          description: Carrera académica del estudiante
+          example: Ingeniería de Sistemas
+        campus:
+          type: string
+          description: Campus al que pertenece el estudiante
+          example: Lima Norte
+        mostValueTeamWork:
+          type: string
+          description: Aspecto más valorado en el trabajo en equipo por el estudiante
+          example: Liderazgo
+        availabilities:
+          type: array
+          description: Lista de disponibilidades del estudiante en equipos de trabajo
+          items:
+            $ref: '#/components/schemas/TeamWorkResponse'
+      description: Respuesta con los detalles de un estudiante
+    TeamWorkResponse:
+      type: object
+      properties:
+        teamWorkId:
+          type: string
+          description: Identificador único del equipo de trabajo
+          example: tw987
+        studentId:
+          type: string
+          description: Identificador del estudiante asociado
+          example: stu123
+        availableDays:
+          type: string
+          description: Días disponibles del estudiante para el trabajo en equipo
+          example: "Lunes, Miércoles, Viernes"
+        hourToStart:
+          type: string
+          description: Hora de inicio de disponibilidad
+          example: 08:00
+        hourToEnd:
+          type: string
+          description: Hora de fin de disponibilidad
+          example: 12:00
+      description: Detalles de disponibilidad del estudiante en trabajo en equipo
+    GetLoginAnotherRoleResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identificador único del registro de acceso a otro rol
+          example: 123e4567-e89b-12d3-a456-426614174000
+        roleSource:
+          type: string
+          description: Rol de origen desde el cual el usuario intenta acceder
+          example: STUDENT
+        roleAllowed:
+          type: string
+          description: Rol al que se permite acceder desde el rol de origen
+          example: TEACHER
+        createdAt:
+          type: string
+          description: Fecha de creación del registro
+          example: 2024-02-25T14:30:00Z
+        updatedAt:
+          type: string
+          description: Fecha de última actualización del registro (puede ser nula)
+          nullable: true
+          example: 2024-02-26T10:15:00Z
+    SearchUserResponse:
+      type: object
+      properties:
+        resulTotal:
+          type: integer
+          description: Cantidad total de resultados encontrados
+          format: int64
+          example: 50
+        list:
+          type: array
+          description: Lista de usuarios con sus roles
+          items:
+            $ref: '#/components/schemas/UserRoleResponse'
+      description: Respuesta de la búsqueda de usuarios
+    UserRoleResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: Identificador único del usuario.
+          example: 123e4567-e89b-12d3-a456-426614174000
+        email:
+          type: string
+          description: Correo electrónico del usuario.
+          example: usuario@example.com
+        code:
+          type: string
+          description: Código de usuario en el sistema.
+          example: USR2025001
+        documentType:
+          type: string
+          description: Tipo de documento de identidad del usuario.
+          example: DNI
+        documentNumber:
+          type: string
+          description: Número de documento de identidad del usuario.
+          example: "12345678"
+        firstName:
+          type: string
+          description: Nombre del usuario.
+          example: Juan
+        lastName:
+          type: string
+          description: Apellido del usuario.
+          example: Pérez
+        period:
+          type: string
+          description: Periodo académico o de inscripción del usuario.
+          example: 2025-01
+        birthdate:
+          type: string
+          description: Fecha de nacimiento del usuario.
+          example: 1990-05-15
+        picture:
+          type: string
+          description: URL de la imagen de perfil del usuario.
+          example: https://example.com/profile.jpg
+        userRoleName:
+          type: string
+          description: Nombre del rol asignado al usuario.
+          example: Estudiante
+        roleStatus:
+          type: string
+          description: Estado del rol del usuario.
+          example: ACTIVE
+        profileUrl:
+          type: string
+          description: URL del perfil del usuario.
+          example: https://example.com/profile/123e4567
+      description: Respuesta con la información del rol de un usuario en el sistema.
+    RoleResponse:
+      type: object
+      properties:
+        roleId:
+          type: string
+          description: Identificador único del rol
+          example: 123e4567-e89b-12d3-a456-426614174000
+        roleName:
+          type: string
+          description: Nombre del rol
+          example: ADMIN
+        createdAt:
+          type: string
+          description: Fecha de creación del rol en formato ISO 8601
+          example: 2024-02-25T10:15:30
+        updatedAt:
+          type: string
+          description: Fecha de última actualización del rol en formato ISO 8601
+          nullable: true
+          example: 2024-02-26T12:45:00
+        status:
+          type: string
+          description: Estado del rol
+          example: ACTIVE
+      description: Representa la respuesta con la información de un rol
+    DataAcademicResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: Identificador único del usuario
+          example: 123e4567-e89b-12d3-a456-426614174000
+        completeName:
+          type: string
+          description: Nombre completo del usuario
+          example: Juan Pérez
+        dni:
+          type: string
+          description: Número de DNI
+          example: "12345678"
+        firstName:
+          type: string
+          description: Primer nombre del usuario
+          example: Juan
+        lastName:
+          type: string
+          description: Apellidos del usuario
+          example: Pérez Gómez
+        studentCode:
+          type: string
+          description: Código de estudiante
+          example: STU12345
+        studentId:
+          type: string
+          description: Identificador del estudiante
+          example: "98765"
+        campus:
+          type: string
+          description: Código del campus
+          example: LIM01
+        career:
+          type: string
+          description: Nombre de la carrera
+          example: Ingeniería de Sistemas
+        prog:
+          type: string
+          description: Código del programa académico
+          example: PROG001
+        progDesc:
+          type: string
+          description: Descripción del programa académico
+          example: Programa de Ingeniería de Software
+        plan:
+          type: string
+          description: Plan de estudios
+          example: 2020-1
+        campusDesc:
+          type: string
+          description: Descripción del campus
+          example: Campus Lima
+        lastPeriodEnrolled:
+          type: string
+          description: Último período en el que se matriculó
+          example: 2024-1
+        relativeCycle:
+          type: string
+          description: Ciclo relativo del estudiante
+          example: 3er Ciclo Relativo
+        nickName:
+          type: string
+          description: Apodo o nickname del usuario
+          example: JPerez
+        phone:
+          type: string
+          description: Número de teléfono del usuario
+          example: +51987654321
+        email:
+          type: string
+          description: Correo electrónico del usuario
+          example: juan.perez@example.com
+        aboutMe:
+          type: string
+          description: Descripción personal del usuario
+          example: Apasionado por la tecnología
+        statusPhone:
+          type: boolean
+          description: Indica si el número de teléfono es público
+          example: true
+        isEngagement:
+          type: boolean
+          description: Indica si el usuario tiene un alto nivel de compromiso
+          example: false
+        files:
+          type: array
+          description: Lista de archivos multimedia asociados al usuario
+          items:
+            $ref: '#/components/schemas/MultimediaUserDataResponse'
+      description: Datos académicos del usuario
+    UserEngagementResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: ID único del usuario
+          example: 550e8400-e29b-41d4-a716-446655440000
+        isEngagement:
+          type: boolean
+          description: Indica si el usuario tiene engagement activo
+          example: true
+    RestResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indica si la operación fue exitosa
+          example: true
+        code:
+          type: integer
+          description: Código específico del sistema para la respuesta
+          format: int32
+          example: 1001
+        message:
+          type: string
+          description: Mensaje descriptivo de la respuesta
+          example: Operación exitosa
+        data:
+          type: object
+          description: Datos devueltos en la respuesta
+          example: "{ 'id': 1, 'name': 'Usuario' }"
+        idTransaction:
+          type: string
+          description: Identificador único de la transacción
+          example: abc123-xyz456
+      description: Estructura estándar de respuesta de la API
+  securitySchemes:
+    Authorization:
+      type: http
+      name: Authorization
+      scheme: Bearer
+      bearerFormat: JWT
