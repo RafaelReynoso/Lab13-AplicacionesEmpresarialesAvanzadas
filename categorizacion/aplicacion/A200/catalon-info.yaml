@@ -1,0 +1,8 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: A200-UTP+CLASS
+  description: A200-UTP+CLASS
+spec:
+  owner: UTP+CLASS
+  domain: Programa_Administrativo
