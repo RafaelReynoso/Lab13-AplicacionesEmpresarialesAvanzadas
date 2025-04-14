@@ -1,12 +1,18 @@
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
-  name: api-usuarios
-  description: API de usuarios de A190
+  name: A200-ms-user
+  description: Documentación detallada de la API para la gestión de usuarios, roles, contenido multimedia, sincronizaciones con PeopleSoft y otros servicios relacionados.
+  tags:
+    - A200
 spec:
   type: openapi
   lifecycle: production
-  owner: equipo-backend
-  system: A190
+  owner: UTP+CLASS
+  system: A200
+  version: 1.0.0
   definition:
     $text: https://raw.githubusercontent.com/RafaelReynoso/Lab13-AplicacionesEmpresarialesAvanzadas/refs/heads/master/openapi.yaml
+  links:
+    - url: https://dev.azure.com/master-aws/A200-UTP_CLASS/_git/A200-03-ms-user
+      description: Repositorio Azure DevOps
