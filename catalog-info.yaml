@@ -3,6 +3,11 @@ kind: API
 metadata:
   name: A200-ms-user
   description: Documentación detallada de la API para la gestión de usuarios, roles, contenido multimedia, sincronizaciones con PeopleSoft y otros servicios relacionados.
+  links:
+    - url: https://dev.azure.com/master-aws/A200-UTP_CLASS/_git/A200-03-ms-user
+      title: Repositorio Azure DevOps
+  tags:
+    - user
 spec:
   type: openapi
   lifecycle: production
@@ -11,6 +16,4 @@ spec:
   version: 1.0.0
   definition:
     $text: https://raw.githubusercontent.com/RafaelReynoso/Lab13-AplicacionesEmpresarialesAvanzadas/refs/heads/master/openapi.yaml
-  links:
-    - url: https://dev.azure.com/master-aws/A200-UTP_CLASS/_git/A200-03-ms-user
-      description: Repositorio Azure DevOps
+  
