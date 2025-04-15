@@ -5,13 +5,13 @@ metadata:
   description: Documentación detallada de la API para la gestión de usuarios, roles, contenido multimedia, sincronizaciones con PeopleSoft y otros servicios relacionados.
   links:
     - url: https://dev.azure.com/master-aws/A200-UTP_CLASS/_git/A200-03-ms-user
-      title: Repositorio Azure DevOps
+      title: Repositorio en Azure DevOps
   tags:
     - admision
 spec:
   type: openapi
   lifecycle: production
-  owner: UTP+CLASS
+  owner: utp_class
   system: UTP-CLASS
   version: 1.0.0
   definition:
