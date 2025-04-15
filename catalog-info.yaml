@@ -7,7 +7,7 @@ metadata:
     - url: https://dev.azure.com/master-aws/A200-UTP_CLASS/_git/A200-03-ms-user
       title: Repositorio Azure DevOps
   tags:
-    - user
+    - admision
 spec:
   type: openapi
   lifecycle: production
